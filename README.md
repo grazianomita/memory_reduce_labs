@@ -1,2 +1,2 @@
-# memory_reduce_labs
+# map_reduce_labs
 Clouds laboratories
