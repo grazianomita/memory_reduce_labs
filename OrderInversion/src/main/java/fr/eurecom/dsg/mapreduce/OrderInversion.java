@@ -44,7 +44,7 @@ public class OrderInversion extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         Configuration conf = this.getConf();
-        Job job = new Job(conf, "Word Count");
+        Job job = new Job(conf, "OrderInversion");
 
         // Set job input format
         job.setInputFormatClass(TextInputFormat.class);

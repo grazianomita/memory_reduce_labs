@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>fr.eurecom.dsg.mapreduce</groupId>
-  <artifactId>Pair</artifactId>
+  <artifactId>OrderInversion</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Pair</name>
+  <name>OrderInversion</name>
   <url>http://maven.apache.org</url>
 
   <properties>
