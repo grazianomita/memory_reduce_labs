@@ -51,14 +51,14 @@ public class Pair extends Configured implements Tool {
         // Set Map Class
         job.setMapperClass(PairMapper.class);
         // Set the map output key
-        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputKeyClass(TextPair.class);
         // Set the value classes
         job.setMapOutputValueClass(IntWritable.class);
 
         // Set reduce class
         job.setReducerClass(PairReducer.class);
         // Set the reduce output key
-        job.setOutputKeyClass(Text.class);
+        job.setOutputKeyClass(TextPair.class);
         // Set the value classes
         job.setOutputValueClass(IntWritable.class);
 
