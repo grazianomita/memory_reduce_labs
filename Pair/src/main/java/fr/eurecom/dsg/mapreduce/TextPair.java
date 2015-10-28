@@ -29,7 +29,7 @@ public class TextPair implements WritableComparable<TextPair> {
         this.first = new Text(first);
     }
 
-    public void setSecond(String first) {
+    public void setSecond(String second) {
         this.second = new Text(second);
     }
 
