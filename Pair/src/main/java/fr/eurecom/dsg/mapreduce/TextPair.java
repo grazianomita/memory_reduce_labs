@@ -42,7 +42,7 @@ public class TextPair implements WritableComparable<TextPair> {
     }
 
     public TextPair() {
-
+		TextPair(new Text(), new Text());
     }
 
     public TextPair(String first, String second) {
