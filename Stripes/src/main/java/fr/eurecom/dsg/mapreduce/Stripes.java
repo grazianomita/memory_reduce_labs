@@ -54,14 +54,14 @@ public class Stripes extends Configured implements Tool {
         // Set the map output key
         job.setMapOutputKeyClass(Text.class);
         // Set the value classes
-        job.setMapOutputValueClass(IntWritable.class);
+        job.setMapOutputValueClass(MapWritable.class);
 
         // Set reduce class
         job.setReducerClass(StripesReducer.class);
         // Set the reduce output key
         job.setOutputKeyClass(Text.class);
         // Set the value classes
-        job.setOutputValueClass(IntWritable.class);
+        job.setOutputValueClass(MapWritable.class);
 
         // Set job output format
         job.setOutputFormatClass(TextOutputFormat.class);
