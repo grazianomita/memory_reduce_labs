@@ -6,6 +6,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -43,7 +44,7 @@ public class Stripes extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         Configuration conf = this.getConf();
-        Job job = new Job(conf, "Word Co-occurrence");
+        Job job = new Job(conf, "Word Co-occurrence - Stripes");
 
         // Set job input format
         job.setInputFormatClass(TextInputFormat.class);
@@ -78,10 +79,10 @@ public class Stripes extends Configured implements Tool {
 
 }
 
-class StripesMapper extends Mapper<IntWritable, Text, Text, MapWritable> {
+class StripesMapper extends Mapper<LongWritable, Text, Text, MapWritable> {
 
     @Override
-    public void map(IntWritable key, Text value, Context context) throws java.io.IOException, InterruptedException {
+    public void map(LongWritable key, Text value, Context context) throws java.io.IOException, InterruptedException {
         String[] tokens = value.toString().split("\\s+");
         if (tokens.length > 1) {
             for (int i=0; i<tokens.length; i++) {
