@@ -43,11 +43,11 @@ public class DistributedCacheJoin extends Configured implements Tool {
         this.outputDir = new Path(args[3]);
 
         // inputTinyFile is expected to be on the local filesystem
-        File inputTinyFileDescriptor = new File(args[1]);
+        /*File inputTinyFileDescriptor = new File(args[1]);
         if(!inputTinyFileDescriptor.exists()) {
             System.out.println("Error: file " + args[1] + "does not exist");
             System.exit(-1);
-        }
+        } */
     }
 
     @Override
