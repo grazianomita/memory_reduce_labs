@@ -28,20 +28,15 @@ public class DistributedCacheJoin extends Configured implements Tool {
 
     private Path outputDir;
     private Path inputFile;
-    protected static Path inputTinyFile;
+    private Path inputTinyFile;
     private int numReducers;
-
-    public static void main(String[] args) throws Exception {
-        int res = ToolRunner.run(new Configuration(), new DistributedCacheJoin(args), args);
-        System.exit(res);
-    }
 
     public DistributedCacheJoin(String[] args) {
         if (args.length != 4) {
-            System.out.println("Usage: DistributedCacheJoin <num_reducers> <input_tiny_file> <input_file> <output_dir>");
+            System.out.println("Usage: DistributedCacheJoin <num_reducers> " +
+                    "<input_tiny_file> <input_file> <output_dir>");
             System.exit(0);
         }
-
         this.numReducers = Integer.parseInt(args[0]);
         this.inputTinyFile = new Path(args[1]);
         this.inputFile = new Path(args[2]);
@@ -57,46 +52,57 @@ public class DistributedCacheJoin extends Configured implements Tool {
 
     @Override
     public int run(String[] args) throws Exception {
+
+        // TODO: define new job instead of null using conf e setting a name
         Configuration conf = this.getConf();
 
-        //Add the "secondary" file to the distributed cache
+        // TODO: add the smallFile to the distributed cache
         DistributedCache.addCacheFile(inputTinyFile.toUri(), conf);
 
         Job job = new Job (conf);
         job.setJobName("DistributedCacheJoin");
 
-        // Set job input format
+        // TODO: set job input format
         job.setInputFormatClass(TextInputFormat.class);
 
-        // Set Map Class
+        // TODO: set map class and the map output key and value classes
         job.setMapperClass(MSMap.class);
-        // Set the map output key
         job.setMapOutputKeyClass(Text.class);
-        // Set the value classes
         job.setMapOutputValueClass(LongWritable.class);
 
         // set combiner class
         job.setCombinerClass(MSReduce.class);
 
-        // Set reduce class
+        // TODO: set reduce class and the reduce output key and value classes
         job.setReducerClass(MSReduce.class);
-        // Set the reduce output key
         job.setOutputKeyClass(Text.class);
-        // Set the value classes
         job.setOutputValueClass(LongWritable.class);
 
-        // Set job output format
+        // TODO: set job output format
         job.setOutputFormatClass(TextOutputFormat.class);
-        // Add the input file as job input (from HDFS) to the variable inputPath
-        FileInputFormat.addInputPath(job, inputFile);
-        // Set the output path for the job results (to HDFS) to the variable outputPath
+
+        // TODO: add the input file as job input (from HDFS) to the variable
+        //       inputFile
+        FileInputFormat.setInputPaths(job, inputFile);
+
+        // TODO: set the output path for the job results (to HDFS) to the variable
+        //       outputPath
         FileOutputFormat.setOutputPath(job, outputDir);
-        // Set the number of reducers using variable numberReducers
+
+        // TODO: set the number of reducers using variable numberReducers
         job.setNumReduceTasks(numReducers);
-        // Set the jar class
+
+        // TODO: set the jar class
         job.setJarByClass(DistributedCacheJoin.class);
 
         return job.waitForCompletion(true) ? 0 : 1;
+    }
+
+    public static void main(String[] args) throws Exception {
+        int res = ToolRunner.run(new Configuration(),
+                new DistributedCacheJoin(args),
+                args);
+        System.exit(res);
     }
 
 }
@@ -104,49 +110,51 @@ public class DistributedCacheJoin extends Configured implements Tool {
 class MSMap extends Mapper<LongWritable, Text, Text, LongWritable> {
 
     Set<String> exclude = new HashSet<String>();
-    static final private LongWritable one = new LongWritable(1);
+    private Text word = new Text();
+    static final private LongWritable ONE = new LongWritable(1);
 
     @Override
-    protected void setup(Context context) throws IOException, InterruptedException {
-        Path [] cacheFilesLocal = DistributedCache.getLocalCacheFiles(context.getConfiguration());
-        if (cacheFilesLocal == null)
-            return;
-        for (Path p : cacheFilesLocal) {
-            if (p.getName().toString().trim().equals(DistributedCacheJoin.inputTinyFile.toString())) {
-                exclude.clear();
-                String line;
-                BufferedReader in = new BufferedReader(new FileReader(p.toString()));
-                while ((line = in.readLine()) != null) {
-                    String splitted[] = line.split("\\s+");
-                    for (String s : splitted)
-                        exclude.add(s);
+    protected void setup(Context context) throws IOException,
+            InterruptedException {
+        // TODO: load the vector from the small file cached
+        Path [] cachePaths = DistributedCache.getLocalCacheFiles(context.getConfiguration());
+        if (cachePaths != null && cachePaths.length > 0) {
+            exclude.clear();
+            String line;
+            BufferedReader in = new BufferedReader( new FileReader(cachePaths[0].toString()));
+            while ((line = in.readLine()) != null) {
+                String splitted[]=line.split("\\s+");
+                for(String s : splitted) {
+                    exclude.add(s);
                 }
-                in.close();
             }
+            in.close();
         }
     }
 
     @Override
-    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+    protected void map(LongWritable key, Text value, Context context)
+            throws IOException, InterruptedException {
         StringTokenizer st= new StringTokenizer(value.toString());
         while (st.hasMoreTokens()) {
             String tmp = st.nextToken();
-            if (exclude.contains(tmp) == false)
-                context.write(new Text(tmp), one);
+            if (!exclude.contains(tmp)) {
+                this.word.set(tmp);
+                context.write(this.word,ONE);
+            }
         }
     }
-
 }
 
 class MSReduce extends Reducer<Text, LongWritable, Text, LongWritable> {
 
     @Override
     protected void reduce(Text word, Iterable<LongWritable> vals, Context context) throws IOException, InterruptedException {
-        long sum = 0;
+        long accumulator = 0;
         for (LongWritable value : vals) {
-            sum += value.get();
+            accumulator += value.get();
         }
-        context.write(word, new LongWritable(sum));
+        context.write(word, new LongWritable(accumulator));
     }
 
 }
