@@ -12,6 +12,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
@@ -30,33 +31,43 @@ public class ReduceSideJoin extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
 
+        // TODO: define new job instead of null using conf e setting a name
         Configuration conf = this.getConf();
 
         Job job = new Job (conf);
         job.setJobName("ReduceSideJoin");
 
-        // Set input format class
+        // TODO: set job input format
         job.setInputFormatClass(TextInputFormat.class);
 
-        // Set map class and the map output key and value classes
+        // TODO: set map class and the map output key and value classes
         job.setMapperClass(RSMap.class);
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(TextPair.class);
+        job.setMapOutputKeyClass(TextPair.class);
+        job.setMapOutputValueClass(Text.class);
 
-        // Set reduce class and the reduce output key and value classes
+        // TODO: set reduce class and the reduce output key and value classes
         job.setReducerClass(RSReduce.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        // Set job output format
+        // set partitioner
+        job.setPartitionerClass(RSPartitioner.class);
+
+        // TODO: set job output format
         job.setOutputFormatClass(TextOutputFormat.class);
-        // Input file as job input (from HDFS) to the variable inputFile
+
+        // TODO: add the input file as job input (from HDFS) to the variable
+        //       inputFile
         FileInputFormat.setInputPaths(job, inputPath);
-        // Set the output path for the job results (to HDFS) to the variable outputPath
+
+        // TODO: set the output path for the job results (to HDFS) to the variable
+        //       outputPath
         FileOutputFormat.setOutputPath(job, outputDir);
-        // Set the number of reducers using variable numberReducers
+
+        // TODO: set the number of reducers using variable numberReducers
         job.setNumReduceTasks(numReducers);
-        // Set the jar class
+
+        // TODO: set the jar class
         job.setJarByClass(ReduceSideJoin.class);
 
         return job.waitForCompletion(true) ? 0 : 1;
@@ -132,4 +143,18 @@ class RSReduce extends Reducer<Text, TextPair, Text, Text> {
         }
     }
 
+}
+
+class RSPartitioner extends Partitioner<TextPair, Text> {
+    @Override
+    public int getPartition(TextPair key, Text value,
+                            int numPartitions) {
+        // TODO: implement getPartition such that pairs with the same first element
+        //       will go to the same reducer. You can use toUnsigned as utility.
+        return toUnsigned(key.getFirst().toString().hashCode())%numPartitions;
+    }
+
+    public static int toUnsigned(int val) {
+        return val & Integer.MAX_VALUE;
+    }
 }
