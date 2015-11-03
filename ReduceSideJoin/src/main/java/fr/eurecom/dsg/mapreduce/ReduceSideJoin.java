@@ -1,6 +1,8 @@
 package fr.eurecom.dsg.mapreduce;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.hadoop.conf.Configuration;
@@ -113,12 +115,20 @@ class RSReduce extends Reducer<Text, TextPair, Text, Text> {
 
     @Override
     protected void reduce(Text joinAttr, Iterable<TextPair> values, Context context) throws IOException, InterruptedException {
+        List<Text> users = new ArrayList<Text>();
+        List<Text> friendsOfFriends = new ArrayList<Text>();
+
         for (TextPair value : values) {
             // LEFT TAG
             if (value.getSecond().toString().compareTo("0") == 0)
-                outR = value.getFirst();
+                users.add(value.getFirst());
             else //RIGHT TAG
-                context.write(outR, value.getFirst());
+                friendsOfFriends.add(value.getFirst());
+        }
+
+        for (Text user : users) {
+            for (Text friendOfFriend : friendsOfFriends)
+                context.write(user, friendOfFriend);
         }
     }
 
