@@ -33,8 +33,7 @@ public class DistributedCacheJoin extends Configured implements Tool {
 
     public DistributedCacheJoin(String[] args) {
         if (args.length != 4) {
-            System.out.println("Usage: DistributedCacheJoin <num_reducers> " +
-                    "<input_tiny_file> <input_file> <output_dir>");
+            System.out.println("Usage: DistributedCacheJoin <num_reducers> " + "<input_tiny_file> <input_file> <output_dir>");
             System.exit(0);
         }
         this.numReducers = Integer.parseInt(args[0]);
