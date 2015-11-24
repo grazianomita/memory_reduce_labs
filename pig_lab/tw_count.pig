@@ -8,6 +8,6 @@ clean_dataset = FILTER dataset BY $1 is not null;
 grouped_dataset = GROUP clean_dataset BY id;
 
 -- Foreach node ID generate an output relation consisting of the node ID and the number of friends
-friends = FOREACH grouped_dataset GENERATE group, SUM(grouped_datase.$1);
+friends = FOREACH grouped_dataset GENERATE group, COUNT(clean_dataset.$1);
 
 STORE friends into './sample-output/TW_COUNT/';
