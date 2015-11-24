@@ -1,5 +1,5 @@
 -- Load input data from local input directory
-A = LOAD './local-input/WORD_COUNT/sample.txt';
+A = LOAD './sample-input/WORD_COUNT/sample.txt';
 
 -- Parse and clean input data
 B = FOREACH A GENERATE FLATTEN(TOKENIZE((chararray)$0)) AS word;
@@ -12,4 +12,4 @@ D = GROUP C BY word;
 E = FOREACH D GENERATE group, COUNT(C);
 
 -- Store output data in local output directory
-store E into './local-output/WORD_COUNT/';
+store E into './sample-output/WORD_COUNT/';
