@@ -1,4 +1,4 @@
-SET DEFAULT PARALLEL 10;
+SET DEFAULT_PARALLEL 10;
 
 -- Load input data from local input directory
 -- The input file is loaded twice in order to perform the join
