@@ -8,6 +8,6 @@ clean_dataset = FILTER dataset BY $1 is not null;
 grouped_dataset = GROUP clean_dataset BY fr;
 
 -- Foreach node ID generate an output relation consisting of the node ID and the number of friends he follows
-following = FOREACH grouped_dataset GENERATE group, COUNT(*) as following;
+following = FOREACH grouped_dataset GENERATE group, COUNT(clean_dataset) as following;
 
 STORE following into './sample-output/TW_COUNT_FOLLOWING/';
