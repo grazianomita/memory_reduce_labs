@@ -32,7 +32,7 @@ dataset = LOAD '$input' using PigStorage(' ') AS (
 ip_client = FOREACH dataset GENERATE ip_client;
 
 -- Set of ip_server
-ip_server = FOREACH DATASET GENERATE ip_server;
+ip_server = FOREACH dataset GENERATE ip_server;
 
 -- Union
 ip_union = UNION ip_client, ip_server;
