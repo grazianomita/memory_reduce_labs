@@ -1,3 +1,9 @@
+/* Problem statement: Assuming you have a very long trace, or, better,
+   a large number of traces collected each day, count the number of TCP 
+   connection per each client IP, at each of the following time 
+   granularities: hour, day, week, month, year...
+*/
+
 -- Set default parameters
 %default input	'/laboratory/tstat-big.txt'
 %default output './sample-output/TSTAT_1C'
@@ -38,19 +44,19 @@ time_dataset = FOREACH dataset GENERATE
 	GetHour(ToDate((int) first_time_abs)) as hour;
 
 -- Generate cubed table
-cubed = CUBE time_dataset BY ROLLUP (year, month, week, day_of_mont, hour);
+cubed = CUBE time_dataset BY ROLLUP (year, month, week, day_of_month, hour);
 
 -- Flatten the cube -> the group is not flattened!
 flattened_bags = FOREACH cubed GENERATE flatten(cube);
 
--- substitute NULL values with '*' for more readability
+-- substitute NULL values with "-1" for more readability
 flattened_bags = FOREACH flattened_bags GENERATE
-	ip_c as ip_c	
-	(year is not NULL ? year : '*') as year,
-	(month is not NULL ? month : '*') as month,
-	(week is not NULL ? week : '*') as week,
-	(day_of_month is not NULL ? day_of_month : '*') as day_of_month,
-	(hour is not NULL ? hour : '*') as hour;
+	ip_c as ip_c,	
+	(year is not NULL ? year : -1) as year,
+	(month is not NULL ? month : -1) as month,
+	(week is not NULL ? week : -1) as week,
+	(day_of_month is not NULL ? day_of_month : -1) as day_of_month,
+	(hour is not NULL ? hour : -1) as hour;
 
 grouped = GROUP flattened_bags BY (ip_c, year, month, week, day_of_month, hour);
 
