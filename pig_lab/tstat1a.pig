@@ -1,5 +1,5 @@
 -- Load input data from local input directory
-A = LOAD '/laboratory/tstat-sample.txt' using PigStorage(' ') AS (
+A = LOAD '/laboratory/tstat-big.txt' using PigStorage(' ') AS (
 	ip_c:chararray, port_c:int, packets_c:int, rst_c:int, ack_c:int, purack_c:int,
 	unique_bytes_c:long, data_pkts_c:int, data_bytes_c:long, rexmit_pkts_c:int, rexmit_bytes_c:long,
 	out_seq_pkts_c:int, syn_c:int, fin_c:int, ws_c:int, ts_c:int, window_scale_c:int,

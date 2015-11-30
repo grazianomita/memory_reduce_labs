@@ -1,5 +1,5 @@
 -- Set default parameters
-%default input	'/laboratory/tstat-sample.txt'
+%default input	'/laboratory/tstat-big.txt'
 %default output './sample-output/TSTAT_1B'
 
 -- Load input data from local input directory
